@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banco de Talentos - RH Inteligente</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"
+      integrity="sha512-pQa7gQ9DR2J61Dbf4BPU9dEmRmghKlOrFLrYnMJYfub6iAaK8UQaKn78Km8AB6EJ7fxV339yX8Cp3DjNrHqkWg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"
+      integrity="sha512-Bh6idix8PKvfFQ44kVfOoN8fHqtA3TKjY+1a0SVQLQW7ZYNb4cBJDLJyfYos92Zk7LEdcRh4Efq9K+cyrj3M4w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="topbar__logo" aria-hidden="true">🤖</span>
+        <div>
+          <h1>Banco de Talentos Inteligente</h1>
+          <p>Automação de RH com análise de dados em tempo real</p>
+        </div>
+      </div>
+      <button id="toggleTheme" class="btn btn--ghost" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">light_mode</span>
+        Alternar tema
+      </button>
+    </header>
+
+    <main class="layout">
+      <section class="panel panel--form">
+        <div class="panel__header">
+          <h2>Cadastro de Candidatos</h2>
+          <p>
+            Preencha os dados abaixo para cadastrar novos talentos e permitir a
+            classificação automática do sistema.
+          </p>
+        </div>
+        <form id="candidateForm" class="form" autocomplete="off">
+          <div class="form__grid">
+            <label class="form__field">
+              <span>Nome completo *</span>
+              <input type="text" name="name" required placeholder="Ex.: Maria Oliveira" />
+            </label>
+            <label class="form__field">
+              <span>E-mail *</span>
+              <input type="email" name="email" required placeholder="Ex.: maria@email.com" />
+            </label>
+            <label class="form__field">
+              <span>Telefone</span>
+              <input type="tel" name="phone" placeholder="(00) 90000-0000" />
+            </label>
+            <label class="form__field">
+              <span>Área de interesse *</span>
+              <select name="area" required>
+                <option value="">Selecione</option>
+                <option value="Desenvolvimento">Desenvolvimento</option>
+                <option value="Dados">Dados</option>
+                <option value="Design">Design</option>
+                <option value="Produto">Produto</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Outros">Outros</option>
+              </select>
+            </label>
+            <label class="form__field">
+              <span>Experiência (anos) *</span>
+              <input type="number" name="experience" min="0" step="0.5" required />
+            </label>
+            <label class="form__field">
+              <span>Disponibilidade *</span>
+              <select name="availability" required>
+                <option value="">Selecione</option>
+                <option value="Imediata">Imediata</option>
+                <option value="30 dias">30 dias</option>
+                <option value="60 dias">60 dias</option>
+                <option value="Freelancer">Freelancer</option>
+              </select>
+            </label>
+            <label class="form__field form__field--full">
+              <span>Competências técnicas *</span>
+              <input
+                type="text"
+                name="skills"
+                required
+                placeholder="Separe por vírgula. Ex.: JavaScript, React, SQL"
+              />
+            </label>
+            <label class="form__field form__field--full">
+              <span>Experiências relevantes</span>
+              <textarea
+                name="history"
+                rows="3"
+                placeholder="Resuma as experiências, conquistas e responsabilidades"
+              ></textarea>
+            </label>
+            <label class="form__field form__field--full">
+              <span>Currículo em PDF</span>
+              <input type="file" name="resume" accept="application/pdf" />
+              <small>O sistema extrai palavras-chave automaticamente.</small>
+            </label>
+          </div>
+          <div class="form__actions">
+            <button class="btn" type="submit">Adicionar candidato</button>
+            <button class="btn btn--ghost" id="generateReport" type="button">
+              Gerar relatório semanal
+            </button>
+            <button class="btn btn--ghost" id="exportCsv" type="button">
+              Exportar CSV
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel panel--filters">
+        <div class="panel__header">
+          <h2>Triagem inteligente</h2>
+          <p>Refine a lista de talentos com filtros dinâmicos e pesquisa rápida.</p>
+        </div>
+        <form id="filterForm" class="filters">
+          <label class="filters__field">
+            <span>Busca textual</span>
+            <input type="search" name="search" placeholder="Nome, habilidade, localização..." />
+          </label>
+          <label class="filters__field">
+            <span>Área</span>
+            <select name="area">
+              <option value="">Todas</option>
+              <option value="Desenvolvimento">Desenvolvimento</option>
+              <option value="Dados">Dados</option>
+              <option value="Design">Design</option>
+              <option value="Produto">Produto</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </label>
+          <label class="filters__field">
+            <span>Senioridade</span>
+            <select name="seniority">
+              <option value="">Todas</option>
+              <option value="Júnior">Júnior</option>
+              <option value="Pleno">Pleno</option>
+              <option value="Sênior">Sênior</option>
+            </select>
+          </label>
+          <label class="filters__field">
+            <span>Disponibilidade</span>
+            <select name="availability">
+              <option value="">Todas</option>
+              <option value="Imediata">Imediata</option>
+              <option value="30 dias">30 dias</option>
+              <option value="60 dias">60 dias</option>
+              <option value="Freelancer">Freelancer</option>
+            </select>
+          </label>
+          <label class="filters__field">
+            <span>Competências</span>
+            <input type="text" name="skills" placeholder="Ex.: React, UX, Python" />
+          </label>
+          <label class="filters__field">
+            <span>Classificação mínima</span>
+            <input type="range" name="score" min="0" max="100" value="0" />
+            <output data-for="score">0</output>
+          </label>
+        </form>
+      </section>
+
+      <section class="panel panel--candidates">
+        <div class="panel__header">
+          <h2>Talentos encontrados</h2>
+          <p id="candidateStatus">Nenhum candidato cadastrado até o momento.</p>
+        </div>
+        <div class="table-wrapper" role="region" aria-live="polite">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Área</th>
+                <th>Senioridade</th>
+                <th>Competências</th>
+                <th>Disponibilidade</th>
+                <th>Classificação</th>
+              </tr>
+            </thead>
+            <tbody id="candidateTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel panel--dashboard">
+        <div class="panel__header">
+          <h2>Dashboard e indicadores</h2>
+          <p>Visualize as métricas atualizadas conforme novos candidatos são adicionados.</p>
+        </div>
+        <div class="dashboard">
+          <article class="metric">
+            <span class="metric__label">Candidatos cadastrados</span>
+            <strong class="metric__value" id="totalCandidates">0</strong>
+          </article>
+          <article class="metric">
+            <span class="metric__label">Disponíveis agora</span>
+            <strong class="metric__value" id="availableNow">0</strong>
+          </article>
+          <article class="metric">
+            <span class="metric__label">Competências únicas</span>
+            <strong class="metric__value" id="uniqueSkills">0</strong>
+          </article>
+        </div>
+        <div class="charts">
+          <div class="chart-card">
+            <h3>Distribuição por área</h3>
+            <canvas id="areaChart" height="240"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Senioridade</h3>
+            <canvas id="seniorityChart" height="240"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Competências em destaque</h3>
+            <canvas id="skillsChart" height="240"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel--integration">
+        <div class="panel__header">
+          <h2>Integração com planilhas</h2>
+          <p>
+            Configure um endpoint de Google Sheets (Apps Script) ou Excel Online
+            para envio automático de relatórios semanais.
+          </p>
+        </div>
+        <form id="integrationForm" class="integration">
+          <label class="integration__field">
+            <span>URL do webhook/planilha</span>
+            <input
+              type="url"
+              name="sheetUrl"
+              placeholder="https://script.google.com/macros/s/..."
+            />
+          </label>
+          <label class="integration__field">
+            <span>E-mail para receber o relatório</span>
+            <input type="email" name="reportEmail" placeholder="rh@empresa.com" />
+          </label>
+          <div class="integration__actions">
+            <button class="btn" id="sendToSheet" type="button">Enviar dados agora</button>
+            <span id="integrationStatus" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <template id="candidateRowTemplate">
+      <tr>
+        <td data-field="name"></td>
+        <td data-field="area"></td>
+        <td data-field="seniority"></td>
+        <td data-field="skills"></td>
+        <td data-field="availability"></td>
+        <td data-field="score"></td>
+      </tr>
+    </template>
+
+    <footer class="footer">
+      <small>
+        Desenvolvido para operações modernas de RH • Banco de talentos com
+        inteligência automatizada
+      </small>
+    </footer>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
